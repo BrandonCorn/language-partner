@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-export function ConversationResponse({
+export function AudioTextChat({
   text,
 }: {
   text: string;
