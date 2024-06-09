@@ -5,7 +5,11 @@
  */
 
 "use client";
-import { useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
 import { ArrowUpIcon } from "./icons";
@@ -20,10 +24,20 @@ export function ConversationTemp() {
     CoreMessage[]
   >([]);
   const [input, setInput] = useState("");
+  const bottomRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <div className="flex flex-col flex-1 pt-8">
-        <div className="max-w-2xl flex-1 mx-auto flex flex-col items-start gap-8 px-4">
+    <div className="flex flex-col min-h-screen w-full items-center">
+      <div className="flex-col flex flex-1 pt-8 w-3/4 bg-gray-800">
+        <div className="max-w-2xl flex-1 mx-auto flex h-full flex-col items-start gap-8 px-4 overflow-hidden">
           {messages.map((message, i) => {
             return (
               <div
@@ -47,7 +61,8 @@ export function ConversationTemp() {
             );
           })}
         </div>
-        <div className="border rounded-md border-gray-700 max-w-2xl sticky bottom-0 w-full mx-auto mb-8 py-2 flex flex-col gap-1.5 px-4 bg-white dark:bg-gray-700">
+        <div ref={bottomRef}></div>
+        <div className="border rounded-md border-transparent max-w-2xl w-full mx-auto my-8 py-2 flex flex-col gap-1.5 px-4 bg-gray-700 dark:bg-gray-700">
           <form
             className="flex flex-col justify-end h-full"
             action={async () => {
