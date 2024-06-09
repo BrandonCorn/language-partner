@@ -37,6 +37,12 @@ export function ConversationTemp() {
   return (
     <div className="flex flex-col min-h-screen w-full items-center">
       <div className="flex-col flex flex-1 pt-8 w-3/4 bg-gray-800">
+        <div className="sticky top-0 p-2">
+          <h1 className="text-lg gap-1 px-3 h-10">
+            {" "}
+            Language Conversation Partner
+          </h1>
+        </div>
         <div className="max-w-2xl flex-1 mx-auto flex h-full flex-col items-start gap-8 px-4 overflow-hidden">
           {messages.map((message, i) => {
             return (
@@ -100,7 +106,7 @@ export function ConversationTemp() {
                 onChange={(e) =>
                   setInput(e.target.value)
                 }
-                placeholder="What questions have you got??"
+                placeholder="Message language partner"
                 name="message"
                 id="message"
                 rows={1}
