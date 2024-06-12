@@ -11,7 +11,9 @@ import AITextResponse from "@/components/aiTextResponse";
 import ErrorFeedbackDetails, {
   errorFeedbackSchema,
 } from "@/components/languageResources/errorFeedbackDetails";
-import { translationDetailsSchema } from "@/components/languageResources/translationDetails";
+import TranslationDetails, {
+  translationDetailsSchema,
+} from "@/components/languageResources/translationDetails";
 // import { generateObject } from "ai";
 
 export interface ClientMessage {
@@ -42,7 +44,7 @@ export async function continueConversation(
       as the conversation progresses and adjust difficulty of your conversation based on their skill. Provide feedback where necessary, for example if the wrong words are used, if the user makes grammatical errors, or to praise the user as necessary. Your ongoing conversation can have 
       a topic so it resembles everyday conversation, and when the user needs to be told something outside that topic such as their mistakes, you may do so. 
       
-      * When the user first messages you, you should always, always, always ask them what language they want to speak in their native language. Once the user has selected a language, you can ask them any necessary follow up questions for learning that language in their native
+      * When the user first messages you, your first message back should always, always, always be a gretting followed by asking them what language they want to speak in their native language. Once the user has selected a language, you can ask them any necessary follow up questions for learning that language in their native
         language.
       * Only speak the users native language when deemed necessary, this could be for and is not limited to providing definitions of words they should use, when they ask how to translate something, etc.
       * When the user speaks the language incorrectly, call the 'provide_error_feedback' tool to provide feedback on what they did wrong and allow them to try to make their statement again correctly. This includes if the user includes a native language utterance mixed in with the language
@@ -77,6 +79,16 @@ export async function continueConversation(
         }: z.infer<typeof errorFeedbackSchema>) {
           yield <div> Loading... </div>;
 
+          history.done(
+            (messages: ServerMessage[]) => [
+              ...messages,
+              {
+                role: "assistant",
+                content:
+                  "Show user language error details",
+              },
+            ]
+          );
           return (
             <ErrorFeedbackDetails
               error={error}
@@ -94,8 +106,22 @@ export async function continueConversation(
         parameters: translationDetailsSchema,
         generate: async function* (details) {
           yield <div> Loading... </div>;
+
+          history.done(
+            (messages: ServerMessage[]) => [
+              ...messages,
+              {
+                role: "assistant",
+                content:
+                  "Providing word translation for user",
+              },
+            ]
+          );
+
           console.log("all details ", details);
-          return <div> Got em </div>;
+          return (
+            <TranslationDetails {...details} />
+          );
         },
       },
     },

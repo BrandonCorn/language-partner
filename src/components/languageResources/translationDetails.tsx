@@ -166,34 +166,33 @@ export const translationDetailsSchema = z.object({
   }),
 });
 
-export function TranslationDetails() {
+export default function TranslationDetails(
+  details: z.infer<
+    typeof translationDetailsSchema
+  >
+) {
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full flex flex-col h-fit">
       <CardHeader>
         <CardTitle>Word Translation</CardTitle>
-        <CardDescription>
-          Explore the details of a word's
-          translation, including parts of speech,
-          inflections, conjugations, gender, usage
-          examples, and common collocations.
-        </CardDescription>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h3 className="text-2xl font-bold">
-              Florecer
+              {details.translation.newLanguage}
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Spanish
+              {details.newLanguage}
             </p>
           </div>
           <div className="text-right md:text-left">
             <h3 className="text-2xl font-bold">
-              To Bloom
+              {details.translation.nativeLanguage}
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              English
+              {details.nativeLanguage}
             </p>
           </div>
         </div>
@@ -203,7 +202,7 @@ export function TranslationDetails() {
               Parts of Speech
             </h4>
             <p className="text-gray-500 dark:text-gray-400">
-              Verb
+              {details.partsOfSpeech.newLanguage}
             </p>
           </div>
           <div className="text-right md:text-left">
@@ -211,7 +210,10 @@ export function TranslationDetails() {
               Parts of Speech
             </h4>
             <p className="text-gray-500 dark:text-gray-400">
-              Verb
+              {
+                details.partsOfSpeech
+                  .nativeLanguage
+              }
             </p>
           </div>
         </div>
@@ -221,13 +223,29 @@ export function TranslationDetails() {
               Inflections
             </h4>
             <p className="text-gray-500 dark:text-gray-400">
-              Past: Florecí
+              Past:{" "}
+              {
+                details.inflections.newLanguage
+                  .past
+              }
               <br />
-              Present: Florezco
+              Present:{" "}
+              {
+                details.inflections.newLanguage
+                  .present
+              }
               <br />
-              Future: Floreceré
+              Future:{" "}
+              {
+                details.inflections.newLanguage
+                  .future
+              }
               <br />
-              Present Participle: Floreciendo
+              Present Participle:{" "}
+              {
+                details.inflections.newLanguage
+                  .presentParticiple
+              }
             </p>
           </div>
           <div className="text-right md:text-left">
@@ -235,51 +253,92 @@ export function TranslationDetails() {
               Inflections
             </h4>
             <p className="text-gray-500 dark:text-gray-400">
-              Past: Bloomed
+              Past:{" "}
+              {
+                details.inflections.nativeLanguage
+                  .past
+              }
               <br />
-              Present: Bloom
+              Present:{" "}
+              {
+                details.inflections.nativeLanguage
+                  .present
+              }
               <br />
-              Future: Will Bloom
+              Future:{" "}
+              {
+                details.inflections.nativeLanguage
+                  .future
+              }
               <br />
-              Present Participle: Blooming
+              Present Participle:{" "}
+              {
+                details.inflections.nativeLanguage
+                  .presentParticiple
+              }
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h4 className="font-medium">
-              Conjugations
-            </h4>
-            <p className="text-gray-500 dark:text-gray-400">
-              Yo florezco
-              <br />
-              Tú floreces
-              <br />
-              Él/Ella/Usted florece
-              <br />
-              Nosotros florecemos
-              <br />
-              Vosotros florecéis
-              <br />
-              Ellos/Ellas/Ustedes florecen
-            </p>
+        {details?.conjugations && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-medium">
+                Conjugations
+              </h4>
+              <p className="text-gray-500 dark:text-gray-400">
+                {
+                  details.conjugations.present
+                    ?.firstPersonSingular
+                }
+                <br />
+                {
+                  details.conjugations.present
+                    ?.secondPersonalSingularInformal
+                }
+                <br />
+                {
+                  details.conjugations.present
+                    ?.thirdPersonSingular
+                }
+                <br />
+                {
+                  details.conjugations.present
+                    ?.firstPersonPlural
+                }
+                <br />
+                {
+                  details.conjugations.present
+                    ?.secondPersonPluralInformal
+                }
+                <br />
+                {
+                  details.conjugations.present
+                    ?.thirdPersonPlural
+                }
+              </p>
+            </div>
+            <div className="text-right md:text-left">
+              <h4 className="font-medium">
+                Example
+              </h4>
+              <p className="text-gray-500 dark:text-gray-400">
+                "
+                {
+                  details.usageExample
+                    .nativeLanguage
+                }
+                "
+              </p>
+            </div>
           </div>
-          <div className="text-right md:text-left">
-            <h4 className="font-medium">
-              Example
-            </h4>
-            <p className="text-gray-500 dark:text-gray-400">
-              "The cherry trees bloom in spring."
-            </p>
-          </div>
-        </div>
+        )}
         <div>
           <div className="text-left">
             <h4 className="font-medium">
               Example
             </h4>
             <p className="text-gray-500 dark:text-gray-400">
-              "Los cerezos florecen en primavera."
+              "{details.usageExample.newLanguage}"
             </p>
           </div>
         </div>
@@ -288,42 +347,20 @@ export function TranslationDetails() {
             Common Collocations
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer de nuevo</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom again
-              </span>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer en abundancia</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom abundantly
-              </span>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer en primavera</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom in spring
-              </span>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer tardíamente</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom late
-              </span>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer temprano</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom early
-              </span>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
-              <span>florecer en invernadero</span>
-              <span className="text-gray-500 dark:text-gray-400">
-                To bloom in a greenhouse
-              </span>
-            </div>
+            {details.collocations.map(
+              (phrase, i) => {
+                return (
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-sm flex flex-col">
+                    <span>
+                      {phrase.newLanguage}
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      {phrase.nativeLanguage}
+                    </span>
+                  </div>
+                );
+              }
+            )}
           </div>
         </div>
       </CardContent>

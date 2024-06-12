@@ -50,12 +50,6 @@ export default function ErrorFeedbackDetails({
   correction,
   correctedStatement,
 }: z.infer<typeof errorFeedbackSchema>) {
-  console.log("error ", error);
-  console.log("correction ", correction);
-  console.log(
-    "correctedStatement ",
-    correctedStatement
-  );
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow-md p-6 w-full max-w-md mx-auto">
       <div className="space-y-4">

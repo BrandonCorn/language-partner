@@ -19,7 +19,14 @@ export default function ConversationTemp() {
   const { continueConversation } = useActions();
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gray-800 w-3/4">
+      <div className="sticky top-0 z-10 p-2">
+        <div className="max-w-2xl mx-auto ">
+          <h1 className="text-lg gap-1 px-3 h-10 my-4">
+            Language Conversation Partner
+          </h1>
+        </div>
+      </div>
       <div className="flex-col flex flex-1 pt-8 overflow-y-auto">
         <div className="max-w-2xl w-full flex-1 mx-auto flex h-full flex-col items-start gap-8 px-4">
           {messages.map(
@@ -39,9 +46,9 @@ export default function ConversationTemp() {
           )}
         </div>
       </div>
-      <div className="border rounded-md border-transparent max-w-2xl w-full mx-auto my-8 py-2 flex flex-col gap-1.5 px-4 bg-gray-700 dark:bg-gray-700">
+      <div className="border rounded-md border-transparent max-w-2xl w-full mx-auto my-8 py-2 gap-1.5 px-4 bg-gray-700 dark:bg-gray-700">
         <form
-          className="flex flex-col justify-end h-full"
+          className="flex flex-col"
           onSubmit={async (e) => {
             e.preventDefault();
             setMessages(

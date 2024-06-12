@@ -1,8 +1,3 @@
-import {
-  Avatar,
-  AvatarFallback,
-} from "./ui/avatar";
-
 export default function UserTextResponse({
   text,
 }: {
