@@ -8,7 +8,7 @@ import {
   ThumbsDownIcon,
   ThumbsUpIcon,
   RefreshCcwIcon,
-} from "./icons";
+} from "./ui/icons";
 
 export default function AITextResponse({
   text,

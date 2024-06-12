@@ -5,24 +5,13 @@
  */
 
 "use client";
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
-import { ArrowUpIcon } from "./icons";
+import { ArrowUpIcon } from "./ui/icons";
 import UserTextResponse from "./userTextResponse";
-import AITextResponse from "./aiTextResponse";
-import { CoreMessage } from "ai";
-import {
-  readStreamableValue,
-  useUIState,
-  useActions,
-} from "ai/rsc";
+import { useUIState, useActions } from "ai/rsc";
 import { ClientMessage } from "@/app/action";
-import { User } from "lucide-react";
 
 export default function ConversationTemp() {
   const [messages, setMessages] = useUIState();

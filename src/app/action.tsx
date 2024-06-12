@@ -10,7 +10,8 @@ import z from "zod";
 import AITextResponse from "@/components/aiTextResponse";
 import ErrorFeedbackDetails, {
   errorFeedbackSchema,
-} from "@/components/errorFeedbackDetails";
+} from "@/components/languageResources/errorFeedbackDetails";
+import { translationDetailsSchema } from "@/components/languageResources/translationDetails";
 // import { generateObject } from "ai";
 
 export interface ClientMessage {
@@ -45,7 +46,10 @@ export async function continueConversation(
         language.
       * Only speak the users native language when deemed necessary, this could be for and is not limited to providing definitions of words they should use, when they ask how to translate something, etc.
       * When the user speaks the language incorrectly, call the 'provide_error_feedback' tool to provide feedback on what they did wrong and allow them to try to make their statement again correctly. This includes if the user includes a native language utterance mixed in with the language
-        they are trying to learn`,
+        they are trying to learn.
+      * When the user asks what a word means, call the 'wordTranslation' tool to provide detailed information about the word to a user
+        
+        `,
     messages: [
       ...history.get(),
       { role: "user", content: input },
@@ -82,6 +86,16 @@ export async function continueConversation(
               }
             />
           );
+        },
+      },
+      wordTranslation: {
+        description:
+          "When a user asks the meaning of a word, provide detailed information about the word.",
+        parameters: translationDetailsSchema,
+        generate: async function* (details) {
+          yield <div> Loading... </div>;
+          console.log("all details ", details);
+          return <div> Got em </div>;
         },
       },
     },
