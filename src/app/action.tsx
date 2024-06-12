@@ -64,7 +64,6 @@ export async function continueConversation(
             { role: "assistant", content },
           ]
         );
-        console.log("content from ai", content);
         return <AITextResponse text={content} />;
       }
     },
@@ -79,10 +78,6 @@ export async function continueConversation(
           correctedStatement,
         }: z.infer<typeof errorFeedbackSchema>) {
           yield <div> Loading... </div>;
-          console.log(
-            "called execute",
-            `\nerror: ${error}\ncorrection: ${correction}\ncorrectedStatement: ${correctedStatement}`
-          );
 
           return (
             <ErrorFeedbackDetails
