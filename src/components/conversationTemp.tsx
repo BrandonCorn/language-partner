@@ -16,14 +16,18 @@ import { ArrowUpIcon } from "./icons";
 import UserTextResponse from "./userTextResponse";
 import AITextResponse from "./aiTextResponse";
 import { CoreMessage } from "ai";
-import { continueConversation } from "@/app/actions";
-import { readStreamableValue } from "ai/rsc";
+import {
+  readStreamableValue,
+  useUIState,
+  useActions,
+} from "ai/rsc";
+import { ClientMessage } from "@/app/action";
+import { User } from "lucide-react";
 
 export function ConversationTemp() {
-  const [messages, setMessages] = useState<
-    CoreMessage[]
-  >([]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useUIState();
+  const [input, setInput] = useState<string>("");
+  const { continueConversation } = useActions();
   const bottomRef = useRef<any>(null);
 
   useEffect(() => {
@@ -44,60 +48,80 @@ export function ConversationTemp() {
           </h1>
         </div>
         <div className="max-w-2xl flex-1 mx-auto flex h-full flex-col items-start gap-8 px-4 overflow-hidden">
-          {messages.map((message, i) => {
-            return (
-              <div
-                key={i}
-                className="flex items-start gap-4"
-              >
-                {message.role === "user" ? (
-                  <UserTextResponse
-                    text={
-                      message.content as string
-                    }
-                  />
-                ) : (
-                  <AITextResponse
-                    text={
-                      message.content as string
-                    }
-                  />
-                )}
-              </div>
-            );
-          })}
+          {messages.map(
+            (
+              message: ClientMessage,
+              i: number
+            ) => {
+              return (
+                <div
+                  key={i}
+                  className="flex items-start gap-4"
+                >
+                  {message.display}
+                </div>
+              );
+            }
+          )}
         </div>
         <div ref={bottomRef}></div>
         <div className="border rounded-md border-transparent max-w-2xl w-full mx-auto my-8 py-2 flex flex-col gap-1.5 px-4 bg-gray-700 dark:bg-gray-700">
           <form
             className="flex flex-col justify-end h-full"
-            action={async () => {
-              const newMessages: CoreMessage[] = [
-                ...messages,
-                { role: "user", content: input },
-              ];
-              setMessages(newMessages);
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setMessages(
+                (messages: ClientMessage[]) => [
+                  ...messages,
+                  {
+                    role: "user",
+                    display: (
+                      <UserTextResponse
+                        text={input}
+                      />
+                    ),
+                  },
+                ]
+              );
               setInput("");
 
-              const result =
-                await continueConversation(
-                  messages
-                );
+              console.log("messages ", messages);
+              const message =
+                await continueConversation(input);
 
-              console.log("result ", result);
-
-              for await (const delta of readStreamableValue(
-                result
-              )) {
-                console.log("delta ", delta);
-                setMessages([
-                  ...newMessages,
-                  {
-                    role: "assistant",
-                    content: delta as string,
-                  },
-                ]);
-              }
+              setMessages(
+                (messages: ClientMessage[]) => [
+                  ...messages,
+                  message,
+                ]
+              );
+              console.log(
+                "messages after adding user message ",
+                messages
+              );
+              // const newMessages: CoreMessage[] = [
+              //   ...messages,
+              //   { role: "user", content: input },
+              // ];
+              // setMessages(newMessages);
+              // setInput("");
+              // const result =
+              //   await continueConversation(
+              //     messages
+              //   );
+              // console.log("result ", result);
+              // for await (const delta of readStreamableValue(
+              //   result
+              // )) {
+              //   console.log("delta ", delta);
+              //   setMessages([
+              //     ...newMessages,
+              //     {
+              //       role: "assistant",
+              //       content: delta as string,
+              //     },
+              //   ]);
+              // }
             }}
           >
             <div className="relative">

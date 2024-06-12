@@ -1,14 +1,37 @@
 "use server";
 
 import { openai } from "@ai-sdk/openai";
-import { streamText } from "ai";
-import { createStreamableValue } from "ai/rsc";
+import {
+  streamUI,
+  getMutableAIState,
+  createAI,
+} from "ai/rsc";
+import z from "zod";
+import AITextResponse from "@/components/aiTextResponse";
+import ErrorFeedbackDetails, {
+  errorFeedbackSchema,
+} from "@/components/errorFeedbackDetails";
+// import { generateObject } from "ai";
+
+export interface ClientMessage {
+  // id: string;
+  display: React.ReactNode;
+  role: "user" | "assistant";
+}
+
+export interface ServerMessage {
+  content: string;
+  role: "assistant" | "user";
+}
 
 export async function continueConversation(
-  messages: any
+  input: string
 ) {
   "use server";
-  const result = await streamText({
+
+  const history = getMutableAIState();
+
+  const result = await streamUI({
     model: openai("gpt-3.5-turbo"),
     temperature: 0.5,
     system: `You are a language teacher and conversation partner. Assume you have 3 decades of experience teaching people how to speak a new language and use the most effective strategies for learning languages
@@ -26,14 +49,68 @@ export async function continueConversation(
       * When the user first messages you, you should always, always, always ask them what language they want to speak in their native language. Once the user has selected a language, you can ask them any necessary follow up questions for learning that language in their native
         language.
       * When the user makes mistakes, correct them on their mistakes in the most appropriate way conducive to learning the language.
-      * Only speak the users native language when deemed necessary, this could be for and is not limited to providing definitions of words they should use, when they ask how to translate something, etc.`,
-    messages,
+      * Only speak the users native language when deemed necessary, this could be for and is not limited to providing definitions of words they should use, when they ask how to translate something, etc.
+      * When the user speaks the language incorrectly, call the 'provide_error_feedback' tool to provide feedback on what they did wrong and allow them to try to make their statement again correctly. This includes if the user includes a native language utterance mixed in with the language
+        they are trying to learn`,
+    messages: [
+      ...history.get(),
+      { role: "user", content: input },
+    ],
+    text: ({ content, done }) => {
+      if (done) {
+        history.done(
+          (messages: ServerMessage[]) => [
+            ...messages,
+            { role: "assistant", content },
+          ]
+        );
+        console.log("content from ai", content);
+        return <AITextResponse text={content} />;
+      }
+    },
+    tools: {
+      provideErrorFeedback: {
+        description:
+          "When a user speaks the language incorrectly in an utterance, this tool provides corrections of the users mistake. Repeat your utterance after correcting the user. ",
+        parameters: errorFeedbackSchema,
+        generate: async function* ({
+          error,
+          correction,
+          correctedStatement,
+        }: z.infer<typeof errorFeedbackSchema>) {
+          yield <div> Loading... </div>;
+          console.log(
+            "called execute",
+            `\nerror: ${error}\ncorrection: ${correction}\ncorrectedStatement: ${correctedStatement}`
+          );
+
+          return (
+            <ErrorFeedbackDetails
+              error={error}
+              correction={correction}
+              correctedStatement={
+                correctedStatement
+              }
+            />
+          );
+        },
+      },
+    },
   });
 
-  console.log("result ", result);
-
-  const stream = createStreamableValue(
-    result.textStream
-  );
-  return stream.value;
+  return {
+    role: "assistant",
+    display: result.value,
+  };
 }
+
+export const AI = createAI<
+  ServerMessage[],
+  ClientMessage[]
+>({
+  actions: {
+    continueConversation,
+  },
+  initialAIState: [],
+  initialUIState: [],
+});

@@ -15,6 +15,7 @@ export default function AITextResponse({
 }: {
   text: string;
 }) {
+  console.log("ai text response ", text);
   return (
     <div className="grid gap-1">
       <div className="font-bold">AI</div>
